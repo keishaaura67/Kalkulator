@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalkulator Sederhana</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    header {
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding-top: 30px;
+      text-align: center;
+      
+    }
+
+    .judul {
+      display: table;
+      margin: 0 auto;
+      padding-bottom: 10px;
+      color: #1D3557;
+      border-bottom: 2px solid #1D3557;
+      font-size: clamp(1.4rem, 7vw, 2rem);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 16px;
+      padding:16px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb);
+      font-family: Georgia, Arial, sans-serif;
+    }
+
+    .calculator {
+      width: min(320px, 100vw);
+      padding: 20px;
+      border-radius: 20px;
+      background: #1D3557;
+      box-shadow: 0 12px 30px #17203333;
+    }
+
+    #display {
+      width: 100%;
+      height: 72px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border: 0;
+      border-radius: 5px;
+      background: #E0E1DD;
+      color: #243746;
+      font-size: 2rem;
+      text-align: right;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    button {
+      min-height: 56px;
+      border: 0;
+      border-radius: 10px;
+      background: #A2D2FF;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #4b5a72;
+    }
+
+    .operator {
+      background: #FFA62B;
+    }
+
+    .operator:hover {
+      background: #4b5a72;
+    }
+
+    .clear {
+      background: #5FB5B9;
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        position: static; 
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1 class="judul">KALKULATOR</h1>
+</header>
+
+  <main class="calculator" aria-label="Kalkulator">
+    <input id="display" type="text" value="0" aria-label="Layar kalkulator" readonly>
+    <div class="buttons">
+      <button class="clear" data-action="clear">AC</button>
+      <button data-action="delete">DEL</button>
+      <button class="operator" data-value="/">÷</button>
+      <button class="operator" data-value="*">×</button>
+
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="operator" data-value="-">−</button>
+
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="operator" data-value="+">+</button>
+
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="operator" data-action="equals">=</button>
+
+      <button class="zero" data-value="0">0</button>
+      <button data-value=".">.</button>
+    </div>
+  </main>
+
+  <script>
+    const display = document.getElementById("display");
+    const buttons = document.querySelector(".buttons");
+
+    /*Event Listener Tombol*/
+    buttons.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      const { value, action } = button.dataset;
+
+      if (action === "clear") {
+        display.value = "0";
+      } else if (action === "delete") {
+        display.value = display.value.length > 1
+          ? display.value.slice(0, -1)
+          : "0";
+      } else if (action === "equals") {
+        calculate();
+      } else {
+        if (display.value === "0" && /\d/.test(value)) {
+          display.value = value;
+        } else {
+          display.value += value;
+        }
+      }
+    });
+
+    function calculate() {
+      try {
+        // Hanya izinkan angka, operator, titik, spasi, dan tanda kurung.
+        if (!/^[0-9+\-*/().\s]+$/.test(display.value)) {
+          throw new Error("Input tidak valid");
+        }
+
+        const result = Function(`"use strict"; return (${display.value})`)();
+
+        if (!Number.isFinite(result)) {
+          throw new Error("Hasil tidak valid");
+        }
+
+        display.value = String(result);
+      } catch {
+        display.value = "Error";
+      }
+    }
+  </script>
+</body>
+</html>
